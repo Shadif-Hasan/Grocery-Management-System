@@ -27,8 +27,7 @@ void addItem() {
     scanf("%d", &newItem.id);
 
     printf("Enter Item Name: ");
-    scanf(" %[^
-]", newItem.name);
+    scanf(" %[^]", newItem.name);
 
     printf("Enter Quantity: ");
     scanf("%d", &newItem.quantity);
