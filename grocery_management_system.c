@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,6 +14,11 @@ struct Item {
 struct Item inventory[MAX_ITEMS];
 int itemCount = 0;
 
+void clearInputBuffer() {
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);
+}
+
 void addItem() {
     if (itemCount >= MAX_ITEMS) {
         printf("Inventory is full!\n");
@@ -24,19 +28,42 @@ void addItem() {
     struct Item newItem;
 
     printf("Enter Item ID: ");
-    scanf("%d", &newItem.id);
+    if (scanf("%d", &newItem.id) != 1) {
+        printf("Invalid input for ID!\n");
+        clearInputBuffer();
+        return;
+    }
+    clearInputBuffer();
+
+    // Prevent duplicate IDs
+    for (int i = 0; i < itemCount; i++) {
+        if (inventory[i].id == newItem.id) {
+            printf("Item ID already exists!\n");
+            return;
+        }
+    }
 
     printf("Enter Item Name: ");
-    scanf(" %[^]", newItem.name);
+    fgets(newItem.name, sizeof(newItem.name), stdin);
+    newItem.name[strcspn(newItem.name, "\n")] = '\0'; // Remove newline
 
     printf("Enter Quantity: ");
-    scanf("%d", &newItem.quantity);
+    if (scanf("%d", &newItem.quantity) != 1) {
+        printf("Invalid input for quantity!\n");
+        clearInputBuffer();
+        return;
+    }
+    clearInputBuffer();
 
     printf("Enter Price: ");
-    scanf("%f", &newItem.price);
+    if (scanf("%f", &newItem.price) != 1) {
+        printf("Invalid input for price!\n");
+        clearInputBuffer();
+        return;
+    }
+    clearInputBuffer();
 
     inventory[itemCount++] = newItem;
-
     printf("Item added successfully!\n");
 }
 
@@ -48,14 +75,23 @@ void displayItems() {
 
     printf("\n%-10s %-20s %-10s %-10s\n", "ID", "Name", "Quantity", "Price");
     for (int i = 0; i < itemCount; i++) {
-        printf("%-10d %-20s %-10d $%-9.2f\n", inventory[i].id, inventory[i].name, inventory[i].quantity, inventory[i].price);
+        printf("%-10d %-20s %-10d $%-9.2f\n",
+               inventory[i].id,
+               inventory[i].name,
+               inventory[i].quantity,
+               inventory[i].price);
     }
 }
 
 void searchItem() {
     int searchId;
     printf("Enter Item ID to search: ");
-    scanf("%d", &searchId);
+    if (scanf("%d", &searchId) != 1) {
+        printf("Invalid input!\n");
+        clearInputBuffer();
+        return;
+    }
+    clearInputBuffer();
 
     for (int i = 0; i < itemCount; i++) {
         if (inventory[i].id == searchId) {
@@ -74,14 +110,31 @@ void searchItem() {
 void updateItem() {
     int updateId;
     printf("Enter Item ID to update: ");
-    scanf("%d", &updateId);
+    if (scanf("%d", &updateId) != 1) {
+        printf("Invalid input!\n");
+        clearInputBuffer();
+        return;
+    }
+    clearInputBuffer();
 
     for (int i = 0; i < itemCount; i++) {
         if (inventory[i].id == updateId) {
             printf("Enter new quantity: ");
-            scanf("%d", &inventory[i].quantity);
+            if (scanf("%d", &inventory[i].quantity) != 1) {
+                printf("Invalid input!\n");
+                clearInputBuffer();
+                return;
+            }
+            clearInputBuffer();
+
             printf("Enter new price: ");
-            scanf("%f", &inventory[i].price);
+            if (scanf("%f", &inventory[i].price) != 1) {
+                printf("Invalid input!\n");
+                clearInputBuffer();
+                return;
+            }
+            clearInputBuffer();
+
             printf("Item updated successfully.\n");
             return;
         }
@@ -93,7 +146,12 @@ void updateItem() {
 void deleteItem() {
     int deleteId;
     printf("Enter Item ID to delete: ");
-    scanf("%d", &deleteId);
+    if (scanf("%d", &deleteId) != 1) {
+        printf("Invalid input!\n");
+        clearInputBuffer();
+        return;
+    }
+    clearInputBuffer();
 
     for (int i = 0; i < itemCount; i++) {
         if (inventory[i].id == deleteId) {
@@ -121,7 +179,13 @@ int main() {
         printf("5. Delete Item\n");
         printf("6. Exit\n");
         printf("Enter your choice: ");
-        scanf("%d", &choice);
+
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid choice! Please enter a number.\n");
+            clearInputBuffer();
+            continue;
+        }
+        clearInputBuffer();
 
         switch (choice) {
             case 1: addItem(); break;
